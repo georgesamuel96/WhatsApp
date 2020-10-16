@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">WhatsApp</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="register">Register</string>
+    <string name="password">Password</string>
+    <string name="phone">Phone</string>
+    <string name="already_have_account">Already Have Account</string>
+    <string name="logout">Logout</string>
+    <string name="your_name">Your name</string>
+    <string name="your_status">Your status (I am available now)</string>
+    <string name="update">Update</string>
+    <string name="settings">Settings</string>
+</resources>
