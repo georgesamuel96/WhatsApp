@@ -2,7 +2,10 @@ package com.example.georgesamuel.whatsapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,10 +20,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements UserAdapter.UserClickListener {
 
+    private ArrayList<User> usersList = new ArrayList<>();
+    private UserAdapter userAdapter;
+    private RecyclerView rvUsers;
+    private ProgressDialog loader;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference rootRef;
@@ -33,11 +42,8 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         rootRef = FirebaseDatabase.getInstance().getReference();
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+        initView();
 
         if(currentUser == null) {
             sendUserToLoginActivity();
@@ -47,6 +53,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initView() {
+        rvUsers = findViewById(R.id.rvUsers);
+        userAdapter = new UserAdapter(MainActivity.this, usersList, this);
+        rvUsers.setLayoutManager(new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL, false));
+        rvUsers.setHasFixedSize(true);
+        rvUsers.setAdapter(userAdapter);
+
+        loader = new ProgressDialog(this);
+    }
+
+    @Override
+    public void onUserCLickedListener(User user) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     private void verifyUserExistence() {
         String userId = currentUser.getUid();
 
@@ -54,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.child(Constants.USER_NAME).exists()){
-                    Toast.makeText(MainActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+                    getAllUsers();
                 }
                 else {
                     sendUserToSettingsActivity();
@@ -64,6 +90,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+    }
+
+    private void getAllUsers() {
+        loader.setMessage("Loading...");
+        loader.setCancelable(false);
+        loader.show();
+        rootRef.child(Constants.ROOT_USERS).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
+                        User user = userSnapshot.getValue(User.class);
+                        usersList.add(user);
+                    }
+                }
+                else {
+                    usersList.clear();
+                }
+                loader.dismiss();
+                userAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                loader.dismiss();
             }
         });
     }
