@@ -2,6 +2,7 @@ package com.example.georgesamuel.whatsapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,11 +34,13 @@ public class MainActivity extends AppCompatActivity implements UserAdapter.UserC
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference rootRef;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -54,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements UserAdapter.UserC
     }
 
     private void initView() {
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getString(R.string.app_name));
+
         rvUsers = findViewById(R.id.rvUsers);
         userAdapter = new UserAdapter(MainActivity.this, usersList, this);
         rvUsers.setLayoutManager(new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL, false));
@@ -65,7 +72,9 @@ public class MainActivity extends AppCompatActivity implements UserAdapter.UserC
 
     @Override
     public void onUserCLickedListener(User user) {
-
+        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+        intent.putExtra(ChatActivity.EXTRA_USER_RECEIVER_ID, user);
+        startActivity(intent);
     }
 
     @Override
@@ -103,8 +112,19 @@ public class MainActivity extends AppCompatActivity implements UserAdapter.UserC
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
-                        User user = userSnapshot.getValue(User.class);
-                        usersList.add(user);
+                        User user = new User();
+                        HashMap<String, String> userMap = (HashMap<String, String>) userSnapshot.getValue();
+                        if (userMap != null) {
+                            String name = userMap.get(Constants.USER_NAME);
+                            String status = userMap.get(Constants.USER_STATUS);
+                            String uid = userMap.get(Constants.USER_ID);
+                            user.setName(name);
+                            user.setStatus(status);
+                            user.setUserId(uid);
+                            if(!uid.equals(currentUser.getUid()))
+                                usersList.add(user);
+                        }
+
                     }
                 }
                 else {

@@ -1,10 +1,13 @@
 package com.example.georgesamuel.whatsapp;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 
     private String name = "";
     private String status = "";
     private String imagePath = "";
+    private String uid =  "";
 
     public String getName() {
         return name;
@@ -28,5 +31,13 @@ public class User {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public String getUserId() {
+        return uid;
+    }
+
+    public void setUserId(String userId) {
+        this.uid = userId;
     }
 }

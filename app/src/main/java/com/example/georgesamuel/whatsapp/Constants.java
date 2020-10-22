@@ -7,4 +7,9 @@ public class Constants {
     public static final String USER_ID = "uid";
     public static final String USER_STATUS = "status";
     public static final String USER_IMAGE_PATH = "image";
+    public static final String ROOT_MESSAGES = "Messages";
+    public static final String BODY_MESSAGE_MESSAGE = "message";
+    public static final String BODY_MESSAGE_TYPE = "type";
+    public static final String BODY_MESSAGE_FROM = "from";
+    public static final String BODY_MESSAGE_TYPE_TEXT = "text";
 }
