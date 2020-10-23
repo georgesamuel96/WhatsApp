@@ -95,6 +95,7 @@ public class ChatActivity extends AppCompatActivity {
                 Message message = dataSnapshot.getValue(Message.class);
                 messageList.add(message);
                 messageAdapter.notifyDataSetChanged();
+                rvMessages.smoothScrollToPosition(rvMessages.getAdapter().getItemCount());
             }
 
             @Override
