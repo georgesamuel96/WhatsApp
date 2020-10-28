@@ -70,6 +70,7 @@ public class ChatActivity extends AppCompatActivity {
             receiverId = userReceiver.getUserId();
         }
 
+
         rootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         senderId = mAuth.getCurrentUser().getUid();
@@ -112,6 +113,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getMessages() {
+        rootRef.keepSynced(true);
         rootRef.child(ROOT_MESSAGES).child(senderId).child(receiverId).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
